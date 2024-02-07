@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+  game:
+    build: .
+    image: blsalin/rehlds-cstrike
+    container_name: cstrike
+    ports:
+      - 27015:27015
+      - 27015:27015/udp
+

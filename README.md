@@ -1,16 +1,18 @@
-[![GitHub Actions Docker Image CI](https://github.com/artkirienko/hlds-docker-dproto/workflows/Docker%20Image%20CI/badge.svg)](https://github.com/artkirienko/hlds-docker-dproto/actions)
-[![HitCount](http://hits.dwyl.com/artkirienko/hlds-docker-dproto.svg)](http://hits.dwyl.com/artkirienko/hlds-docker-dproto)
-
 ![banner](banner.png)
 
-# HLDS Docker dproto(47/48 Steam+noSteam)
+# ReHLDS Docker
+
+# Fork of HLDS Docker dproto
+
+This started out from the docker setup for "Half-Life Dedicated Server as a Docker Image". Now, it serves as a Counter-Strike 1.6 Dedicated Server as a Docker image.
+Aside from the difference from the original, this is using an updated version of Debian and changes to some of the modules and plugins.
 
 ## Half-Life Dedicated Server as a Docker image
 
-Probably the fastest and easiest way to set up an old-school Half-Life
-Deathmatch Dedicated Server (HLDS). Both Steam and noSteam, old and new
+Probably the fastest and easiest way to set up an old-school Counter-Strike 1.6 server.
+Both Steam and noSteam, old and new
 half-life clients can connect and play together! You don't need to know
-anything about Linux or HLDS to start a server. You just need Docker and
+anything about Linux or ReHLDS to start a server. You just need Docker and
 this image.
 
 ## Quick Start
@@ -18,37 +20,29 @@ this image.
 Start a new server by running:
 
 ```bash
-docker run -it --rm -d -p27015:27015 -p27015:27015/udp artkirienko/hlds
+cd server-example
+docker-compose up -d --build
 ```
 
-Change the player slot size, map or `rcon_password` by running:
-
-```
-docker run -it --rm -d --name hlds -p27015:27015 -p27015:27015/udp artkirienko/hlds +map crossfire +maxplayers 12 +rcon_password SECRET_PASSWORD
-```
-
-> **Note:** Any [server config command](http://sr-team.clan.su/K_stat/hlcommandsfull.html)
-  can be passed by using `+`. But it has to follow after the image name `artkirienko/hlds`.
+This will create a container named "cstrike" with the 27015 port open (on UDP and TCP).
 
 ## What is included
 
-* [HLDS Build](https://github.com/DevilBoy-eXe/hlds) `7882`. This is the last
-  known version that is compatible with last version of **dproto** that's `0.9.582`
+* [ReHLDS Build](https://github.com/dreamstalker/rehlds) `3.13.0.788`.
 
   ```
-  Protocol version 47/48
-  Exe version 1.1.2.2/Stdio (valve)
-  Exe build: 17:23:32 May 24 2018 (7882)
+    Protocol version 48
+    Exe version 1.1.2.7/Stdio (cstrike)
+    Exe build: 07:36:33 Jul 12 2023 (3378)
+
   ```
 
-* [Metamod-p](https://github.com/Bots-United/metamod-p) version `1.21p38`
+* [Metamod-r](https://github.com/theAsmodai/metamod-r) version `1.3.0.138`
 
 * [AMX Mod X](https://github.com/alliedmodders/amxmodx) version `1.8.2`
 
-* **dproto** version `0.9.582`. This is the last version of **dproto**,
-  the project is abandoned.
-
-* [jk_botti](https://github.com/Bots-United/jk_botti) version `1.43`
+* [ReAPI](https://github.com/s1lentq/reapi) version `5.24.0.300`
+* [ReGameDLL_CS](https://github.com/s1lentq/ReGameDLL_CS) version `5.26.0.668`
 
 * Patched list of master servers (official and unofficial master servers
   included), so your game server appear in game server browser of all the clients
@@ -57,25 +51,10 @@ docker run -it --rm -d --name hlds -p27015:27015 -p27015:27015/udp artkirienko/h
 
 ## Default mapcycle
 
-* crossfire
-* bounce
-* datacore
-* frenzy
-* gasworks
-* lambda_bunker
-* rapidcore
-* snark_pit
-* stalkyard
-* subtransit
-* undertow
-* boot_camp
+* de_dust2
+* de_inferno
 
 ## Advanced
 
-In order to use a custom server config file, add your settings
-to `valve/config/server.cfg` of this project and mount the directory as volume
-to `/opt/steam/hlds/valve/config` by running:
-
-```bash
-docker run -it --rm -d -p27015:27015 -p27015:27015/udp -v $(pwd)/valve/config:/opt/steam/hlds/valve/config artkirienko/hlds
-```
+Check out the example under server-example. It allows adding maps and configurations by appending (and overwriting) the original cstrike folder.
+The example contains an override for the mapcycle file.

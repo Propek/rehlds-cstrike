@@ -1,20 +1,23 @@
-FROM debian:buster-slim
+FROM debian:stable-slim
 
-ARG hlds_build=7882
-ARG metamod_version=1.21p38
+ARG rehlds_build=3.13.0.788
+ARG metamod_version=1.3.0.138
 ARG amxmod_version=1.8.2
-ARG jk_botti_version=1.43
+ARG regamedll_version=5.26.0.668
+ARG reapi_version=5.24.0.300
 ARG steamcmd_url=https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz
-ARG hlds_url="https://github.com/DevilBoy-eXe/hlds/releases/download/$hlds_build/hlds_build_$hlds_build.zip"
-ARG metamod_url="https://github.com/Bots-United/metamod-p/releases/download/v$metamod_version/metamod_i686_linux_win32-$metamod_version.tar.xz"
+ARG rehlds_url="https://github.com/dreamstalker/rehlds/releases/download/$rehlds_build/rehlds-bin-$rehlds_build.zip"
+ARG metamod_url="https://github.com/theAsmodai/metamod-r/releases/download/$metamod_version/metamod-bin-$metamod_version.zip"
 ARG amxmod_url="http://www.amxmodx.org/release/amxmodx-$amxmod_version-base-linux.tar.gz"
-ARG jk_botti_url="http://koti.kapsi.fi/jukivili/web/jk_botti/jk_botti-$jk_botti_version-release.tar.xz"
+ARG regamedll_url="https://github.com/s1lentq/ReGameDLL_CS/releases/download/$regamedll_version/regamedll-bin-$regamedll_version.zip"
+ARG reapi_url="https://github.com/s1lentq/reapi/releases/download/$reapi_version/reapi-bin-$reapi_version.zip"
+
 
 # Fix warning:
 # WARNING: setlocale('en_US.UTF-8') failed, using locale: 'C'.
 # International characters may not work.
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    locales=2.28-10 \
+    locales \
  && rm -rf /var/lib/apt/lists/* \
  && localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
 ENV LANG en_US.utf8
@@ -28,12 +31,14 @@ ENV CPU_MHZ=2300
 RUN groupadd -r steam && useradd -r -g steam -m -d /opt/steam steam
 
 RUN apt-get -y update && apt-get install -y --no-install-recommends \
-    ca-certificates=20190110 \
-    curl=7.64.0-4+deb10u1 \
-    lib32gcc1=1:8.3.0-6 \
-    unzip=6.0-23+deb10u1 \
-    xz-utils=5.2.4-1 \
-    zip=3.0-11+b1 \
+    ca-certificates=20230311 \
+    curl=7.88.1-10+deb12u5 \
+    lib32gcc-s1=12.2.0-14 \
+    unzip=6.0-28 \
+    xz-utils=5.4.1-0.2 \
+    zip=3.0-13 \
+    gcc-multilib=4:12.2.0-3 \
+    g++-multilib=4:12.2.0-3 \
  && apt-get -y autoremove \
  && rm -rf /var/lib/apt/lists/*
 
@@ -42,13 +47,12 @@ WORKDIR /opt/steam
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 COPY ./lib/hlds.install /opt/steam
 
-RUN curl -sL "$steamcmd_url" | tar xzvf - \
+RUN curl -sqL "$steamcmd_url" | tar xzvf - \
     && ./steamcmd.sh +runscript hlds.install
 
-RUN curl -sLJO "$hlds_url" \
-    && unzip "hlds_build_$hlds_build.zip" -d "/opt/steam" \
-    && cp -R "hlds_build_$hlds_build"/* hlds/ \
-    && rm -rf "hlds_build_$hlds_build" "hlds_build_$hlds_build.zip"
+RUN curl -sLJO "$rehlds_url" \
+    && unzip -o -j "rehlds-bin-$rehlds_build.zip" "bin/linux32/*" -d "/opt/steam/hlds" \
+    && unzip -o -j "rehlds-bin-$rehlds_build.zip" "bin/linux32/valve/*" -d "/opt/steam/hlds"
 
 # Fix error that steamclient.so is missing
 RUN mkdir -p "$HOME/.steam" \
@@ -57,49 +61,47 @@ RUN mkdir -p "$HOME/.steam" \
 # Fix warnings:
 # couldn't exec listip.cfg
 # couldn't exec banned.cfg
-RUN touch /opt/steam/hlds/valve/listip.cfg
-RUN touch /opt/steam/hlds/valve/banned.cfg
+RUN touch /opt/steam/hlds/cstrike/listip.cfg
+RUN touch /opt/steam/hlds/cstrike/banned.cfg
 
-# Install Metamod-P
-RUN mkdir -p /opt/steam/hlds/valve/addons/metamod/dlls \
-    && touch /opt/steam/hlds/valve/addons/metamod/plugins.ini
-RUN curl -sqL "$metamod_url" | tar -C /opt/steam/hlds/valve/addons/metamod/dlls -xJ
-RUN sed -i 's/dlls\/hl\.so/addons\/metamod\/dlls\/metamod.so/g' /opt/steam/hlds/valve/liblist.gam
+# Install Metamod-R
+RUN mkdir -p /opt/steam/hlds/cstrike/addons/metamod \
+    && touch /opt/steam/hlds/cstrike/addons/metamod/plugins.ini
+RUN curl -sqL "$metamod_url" > tmp.zip
+RUN unzip -j tmp.zip "addons/metamod/metamod*" -d /opt/steam/hlds/cstrike/addons/metamod
+RUN chmod -R 755 /opt/steam/hlds/cstrike/addons/metamod
+RUN sed -i 's/dlls\/cs\.so/addons\/metamod\/metamod_i386.so/g' /opt/steam/hlds/cstrike/liblist.gam
 
 # Install AMX mod X
-RUN curl -sqL "$amxmod_url" | tar -C /opt/steam/hlds/valve/ -zxvf - \
-    && echo 'linux addons/amxmodx/dlls/amxmodx_mm_i386.so' >> /opt/steam/hlds/valve/addons/metamod/plugins.ini
-RUN cat /opt/steam/hlds/valve/mapcycle.txt >> /opt/steam/hlds/valve/addons/amxmodx/configs/maps.ini
+RUN curl -sqL "$amxmod_url" | tar -C /opt/steam/hlds/cstrike/ -zxvf - \
+    && echo 'linux addons/amxmodx/dlls/amxmodx_mm_i386.so' >> /opt/steam/hlds/cstrike/addons/metamod/plugins.ini
+RUN cat /opt/steam/hlds/cstrike/mapcycle.txt >> /opt/steam/hlds/cstrike/addons/amxmodx/configs/maps.ini
 
-# Install dproto
-RUN mkdir -p /opt/steam/hlds/valve/addons/dproto
-COPY lib/dproto/bin/Linux/dproto_i386.so /opt/steam/hlds/valve/addons/dproto/dproto_i386.so
-COPY lib/dproto/dproto.cfg /opt/steam/hlds/valve/dproto.cfg
-RUN echo 'linux addons/dproto/dproto_i386.so' >> /opt/steam/hlds/valve/addons/metamod/plugins.ini
-COPY lib/dproto/amxx/* /opt/steam/hlds/valve/addons/amxmodx/scripting/
+# Install ReGameDLL_CS
+RUN curl -sLJO "$regamedll_url" \
+ && unzip -o -j regamedll-bin-$regamedll_version.zip "bin/linux32/cstrike/*" -d "/opt/steam/hlds/cstrike" \
+ && unzip -o -j regamedll-bin-$regamedll_version.zip "bin/linux32/cstrike/dlls/*" -d "/opt/steam/hlds/cstrike/dlls"
+
+# Install ReAPI
+RUN curl -sLJO "$reapi_url" \
+ && unzip -o reapi-bin-$reapi_version.zip -d "/opt/steam/hlds/cstrike"
+RUN echo 'reapi' >> /opt/steam/hlds/cstrike/addons/amxmodx/configs/modules.ini
 
 # Install bind_key
-COPY lib/bind_key/amxx/bind_key.amxx /opt/steam/hlds/valve/addons/amxmodx/plugins/bind_key.amxx
-RUN echo 'bind_key.amxx            ; binds keys for voting' >> /opt/steam/hlds/valve/addons/amxmodx/configs/plugins.ini
-
-# Install jk_botti
-RUN curl -sqL "$jk_botti_url" | tar -C /opt/steam/hlds/valve/ -xJ \
-    && echo 'linux addons/jk_botti/dlls/jk_botti_mm_i386.so' >> /opt/steam/hlds/valve/addons/metamod/plugins.ini
+COPY lib/bind_key/amxx/bind_key.amxx /opt/steam/hlds/cstrike/addons/amxmodx/plugins/bind_key.amxx
+RUN echo 'bind_key.amxx            ; binds keys for voting' >> /opt/steam/hlds/cstrike/addons/amxmodx/configs/plugins.ini
 
 WORKDIR /opt/steam/hlds
 
 # Copy default config
-COPY valve valve
+COPY --chmod=0755 --chown=steam:steam cstrike cstrike
 
 RUN chmod +x hlds_run hlds_linux
 
-RUN echo 70 > steam_appid.txt
+RUN echo 10 > steam_appid.txt
 
 EXPOSE 27015
 EXPOSE 27015/udp
 
 # Start server
-ENTRYPOINT ["./hlds_run", "-timeout 3", "-pingboost 1"]
-
-# Default start parameters
-CMD ["+map crossfire", "+rcon_password 12345678"]
+ENTRYPOINT ["./hlds_run", "-timeout 3", "-pingboost 1", "-game cstrike", "+map de_dust2"]

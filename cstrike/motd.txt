@@ -1,0 +1,7 @@
+<h1>Welcome to ReHLDS CStrike Docker</h1>
+
+<div>
+This server uses Docker.
+For more information visit
+https://github.com/blsalin/rehlds-cstrike
+</div>
