@@ -20,6 +20,7 @@ this image.
 Start a new server by running:
 
 ```bash
+docker build . --tag blsalin/rehlds-cstrike
 cd server-example
 docker-compose up -d --build
 ```
