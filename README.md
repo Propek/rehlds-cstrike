@@ -20,7 +20,7 @@ this image.
 Start a new server by running:
 
 ```bash
-docker run -name "cstrike" -p 27015:27015 -p 27015:27015/udp blsalin/rehlds-cstrike
+docker run --name "cstrike" -p 27015:27015 -p 27015:27015/udp blsalin/rehlds-cstrike
 ```
 
 This will create a container named "cstrike" with the 27015 port open (on UDP and TCP).
