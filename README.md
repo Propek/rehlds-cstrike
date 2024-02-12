@@ -20,9 +20,7 @@ this image.
 Start a new server by running:
 
 ```bash
-docker build . --tag blsalin/rehlds-cstrike
-cd server-example
-docker-compose up -d --build
+docker run -name "cstrike" -p 27015:27015 -p 27015:27015/udp blsalin/rehlds-cstrike
 ```
 
 This will create a container named "cstrike" with the 27015 port open (on UDP and TCP).
@@ -59,3 +57,11 @@ This will create a container named "cstrike" with the 27015 port open (on UDP an
 
 Check out the example under server-example. It allows adding maps and configurations by appending (and overwriting) the original cstrike folder.
 The example contains an override for the mapcycle file.
+
+
+This is how you can run the advanced docker-compose: 
+```bash
+docker build . --tag rehlds-cstrike
+cd server-example
+docker-compose up -d --build
+```
