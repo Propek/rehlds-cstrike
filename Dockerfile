@@ -12,6 +12,9 @@ ARG amxmod_url="http://www.amxmodx.org/release/amxmodx-$amxmod_version-base-linu
 ARG regamedll_url="https://github.com/s1lentq/ReGameDLL_CS/releases/download/$regamedll_version/regamedll-bin-$regamedll_version.zip"
 ARG reapi_url="https://github.com/s1lentq/reapi/releases/download/$reapi_version/reapi-bin-$reapi_version.zip"
 
+ENV LANG en_US.utf8
+ENV LC_ALL en_US.UTF-8
+ENV CPU_MHZ=2300
 
 # Fix warning:
 # WARNING: setlocale('en_US.UTF-8') failed, using locale: 'C'.
@@ -20,13 +23,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     locales \
  && rm -rf /var/lib/apt/lists/* \
  && localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
-ENV LANG en_US.utf8
-ENV LC_ALL en_US.UTF-8
 
 # Fix error:
 # Unable to determine CPU Frequency. Try defining CPU_MHZ.
 # Exiting on SPEW_ABORT
-ENV CPU_MHZ=2300
 
 RUN groupadd -r steam && useradd -r -g steam -m -d /opt/steam steam
 
