@@ -1,8 +1,8 @@
 FROM --platform=$TARGETOS/$TARGETARCH debian:stable-slim
 
 ENV DEBIAN_FRONTEND=noninteractive
-ENV LANG en_US.utf8
-ENV LC_ALL en_US.UTF-8
+ENV LANG=en_US.utf8
+ENV LC_ALL=en_US.UTF-8
 ENV CPU_MHZ=2300
 
 ARG rehlds_build=3.13.0.788
@@ -80,6 +80,6 @@ RUN echo 10 > steam_appid.txt
 EXPOSE 27015
 EXPOSE 27015/udp
 
-COPY ./entrypoint.sh /entrypoint.sh  # Dodajemy entrypoint.sh
+COPY ./entrypoint.sh /home/container/entrypoint.sh
 
-ENTRYPOINT ["/bin/bash", "/entrypoint.sh"]
+ENTRYPOINT ["/bin/bash", "/home/container/entrypoint.sh"]
