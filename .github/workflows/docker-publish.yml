@@ -5,7 +5,7 @@ on:
     branches:
       - "main"
   tags:
-    - ghcr.io/propek/rehlds-cstrike:*
+      - ghcr.io/propek/rehlds-cstrike:*
 
 env:
   ARCHITECTURES: linux/amd64
