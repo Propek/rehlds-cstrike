@@ -84,6 +84,7 @@ RUN echo 10 > steam_appid.txt
 EXPOSE 27015
 EXPOSE 27015/udp
 
-COPY --chown=steam:steam ./entrypoint.sh /home/container/entrypoint.sh
+#COPY --chown=steam:steam ./entrypoint.sh /home/container/entrypoint.sh
+COPY --chmod=+x ./entrypoint.sh /home/container/entrypoint.sh
 
 ENTRYPOINT ["/bin/bash", "/home/container/entrypoint.sh"]
