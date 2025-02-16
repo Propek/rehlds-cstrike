@@ -28,14 +28,14 @@ RUN apt-get -y install --no-install-recommends \
 RUN apt-get -y install --no-install-recommends libssl-dev:i386 # Install i386 libssl-dev separately
 
 # Create user
-#RUN useradd -m -d /home/container container
+RUN useradd -m -d /home/container container
 
 # Cleanup
 RUN apt-get -y autoremove && rm -rf /var/lib/apt/lists/*
 
-RUN groupadd -r steam && useradd -r -g steam -m -d /home/container steam
+RUN groupadd -r container && useradd -r -g container -m -d /home/container container
 
-USER steam
+USER container
 WORKDIR /home/container
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 COPY ./lib/hlds.install /home/container
@@ -86,7 +86,7 @@ RUN echo 'bind_key.amxx            ; binds keys for voting' >> /home/container/c
 
 WORKDIR /home/container
 
-COPY --chmod=0755 --chown=steam:steam cstrike cstrike
+COPY --chmod=0755 --chown=container:container cstrike cstrike
 
 RUN chmod +x hlds_run hlds_linux
 
