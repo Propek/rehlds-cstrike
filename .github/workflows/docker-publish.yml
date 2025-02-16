@@ -11,7 +11,7 @@ on:
 env:
   ARCHITECTURES: linux/amd64
   IMAGE_NAME: rehlds-cstrike
-  IMAGE_NAMESPACE: blsalin
+  IMAGE_NAMESPACE: propek
 
 jobs:
   build:
