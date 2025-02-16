@@ -4,7 +4,8 @@ on:
   push:
     branches:
       - "main"
-  tags:
+    tags:
+      - ghcr.io/propek/rehlds-cstrike:latest
       - ghcr.io/propek/rehlds-cstrike:*
 
 env:
