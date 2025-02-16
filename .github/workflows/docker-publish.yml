@@ -47,9 +47,9 @@ jobs:
             ghcr.io/${{ env.IMAGE_NAMESPACE }}/${{ env.IMAGE_NAME }}
           tags: |
             type=semver,pattern={{major}}.{{minor}},enable=true
-            type=semver,pattern=latest,enable=true # Tag "latest"
-            type=ref,branch=main # Tag with branch name "main"
-            type=ref,branch=test # Tag with branch name "test"
+            type=semver,pattern=latest,enable=true
+            type=ref,event=push,branch=main
+            type=ref,event=push,branch=test
             ${{ github.sha }}
 
       - name: Build and push Docker image
