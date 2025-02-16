@@ -87,4 +87,6 @@ EXPOSE 27015/udp
 #COPY --chown=steam:steam ./entrypoint.sh /home/container/entrypoint.sh
 COPY --chmod=0755 --chown=steam:steam ./entrypoint.sh /home/container/entrypoint.sh
 
+RUN find -type f -name "entrypoint.sh"
+
 ENTRYPOINT ["/bin/bash", "/home/container/entrypoint.sh"]
