@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - "main"
+      - "test"
     tags:
       - ghcr.io/propek/rehlds-cstrike:latest
       - ghcr.io/propek/rehlds-cstrike:*
@@ -45,10 +46,11 @@ jobs:
           images: |
             ghcr.io/${{ env.IMAGE_NAMESPACE }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=semver,pattern={{major}}.{{minor}},enable=true  # Tag semver
+            type=semver,pattern={{major}}.{{minor}},enable=true
             type=semver,pattern=latest,enable=true # Tag "latest"
-            type=edge,branch=main # Tag z nazwą brancha "main"
-            ${{ github.sha }} # Dodajemy tag z SHA commitu
+            type=ref,branch=main # Tag with branch name "main"
+            type=ref,branch=test # Tag with branch name "test"
+            ${{ github.sha }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5.1.0
