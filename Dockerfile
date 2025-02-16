@@ -35,10 +35,12 @@ RUN groupadd -r container && useradd -r -g container -m -d /home/container conta
 USER container
 WORKDIR /home/container
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-COPY ./lib/cs.install /home/container
+RUN mkdir /home/container/steamcmd
+COPY ./lib/cs.install /home/container/steamcmd
 
-RUN curl -sqL "$steamcmd_url" | tar xzvf - \
-    && ./steamcmd.sh +runscript cs.install
+RUN curl -sqL "$steamcmd_url" | tar xzvf - -C /home/container/steamcmd \
+    && /home/container/steamcmd/steamcmd.sh +force_install_dir /home/container +runscript cs.install
+RUN ls /home/container
 
 RUN curl -sLJO "$rehlds_url" \
     && unzip -o -j "rehlds-bin-$rehlds_build.zip" "bin/linux32/*" -d "/home/container/" \

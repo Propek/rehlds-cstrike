@@ -1,5 +1,6 @@
 force_install_dir /home/container
 login anonymous
 app_set_config 90 mod cstrike
-app_update 90 -beta steam_legacy validate
+app_update 90
+app_update 90 validate
 quit
