@@ -24,7 +24,7 @@ RUN dpkg --add-architecture i386 \
     && rm -rf /var/lib/apt/lists/* \
     && localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
 
-RUN groupadd -r steam && useradd -r -g steam -m -d  steam
+RUN groupadd -r steam && useradd -r -g steam -m -d /home/container
 
 USER steam
 ENV USER=container HOME=
