@@ -27,9 +27,6 @@ RUN apt-get -y install --no-install-recommends \
 
 RUN apt-get -y install --no-install-recommends libssl-dev:i386 # Install i386 libssl-dev separately
 
-# Create user
-RUN useradd -m -d /home/container container
-
 # Cleanup
 RUN apt-get -y autoremove && rm -rf /var/lib/apt/lists/*
 
