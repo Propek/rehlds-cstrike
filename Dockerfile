@@ -24,51 +24,51 @@ RUN dpkg --add-architecture i386 \
     && rm -rf /var/lib/apt/lists/* \
     && localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
 
-RUN groupadd -r steam && useradd -r -g steam -m -d /home/container steam
+RUN groupadd -r steam && useradd -r -g steam -m -d  steam
 
 USER steam
-ENV USER=container HOME=/home/container
+ENV USER=container HOME=
 WORKDIR /home/container
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-COPY ./lib/hlds.install /home/container
+COPY ./lib/hlds.install 
 
 RUN curl -sqL "$steamcmd_url" | tar xzvf - \
     && ./steamcmd.sh +runscript hlds.install
 
 RUN curl -sLJO "$rehlds_url" \
-    && unzip -o -j "rehlds-bin-$rehlds_build.zip" "bin/linux32/*" -d "/home/container" \
-    && unzip -o -j "rehlds-bin-$rehlds_build.zip" "bin/linux32/valve/*" -d "/home/container"
+    && unzip -o -j "rehlds-bin-$rehlds_build.zip" "bin/linux32/*" -d "" \
+    && unzip -o -j "rehlds-bin-$rehlds_build.zip" "bin/linux32/valve/*" -d ""
 
 RUN mkdir -p "$HOME/.steam" \
-    && ln -s /home/container/linux32 "$HOME/.steam/sdk32"
+    && ln -s /linux32 "$HOME/.steam/sdk32"
 
-RUN touch /home/container/cstrike/listip.cfg
-RUN touch /home/container/cstrike/banned.cfg
+RUN touch /cstrike/listip.cfg
+RUN touch /cstrike/banned.cfg
 
-RUN mkdir -p /home/container/cstrike/addons/metamod \
-    && touch /home/container/cstrike/addons/metamod/plugins.ini
+RUN mkdir -p /cstrike/addons/metamod \
+    && touch /cstrike/addons/metamod/plugins.ini
 RUN curl -sqL "$metamod_url" > tmp.zip
-RUN unzip -j tmp.zip "addons/metamod/metamod*" -d /home/container/cstrike/addons/metamod
-RUN chmod -R 755 /home/container/cstrike/addons/metamod
-RUN sed -i 's/dlls\/cs\.so/addons\/metamod\/metamod_i386.so/g' /home/container/cstrike/liblist.gam
+RUN unzip -j tmp.zip "addons/metamod/metamod*" -d /cstrike/addons/metamod
+RUN chmod -R 755 /cstrike/addons/metamod
+RUN sed -i 's/dlls\/cs\.so/addons\/metamod\/metamod_i386.so/g' /cstrike/liblist.gam
 
-RUN curl -sqL "$amxmod_url" | tar -C /home/container/cstrike/ -zxvf - \
-    && echo 'linux addons/amxmodx/dlls/amxmodx_mm_i386.so' >> /home/container/cstrike/addons/metamod/plugins.ini
-RUN cat /home/container/cstrike/mapcycle.txt >> /home/container/cstrike/addons/amxmodx/configs/maps.ini
+RUN curl -sqL "$amxmod_url" | tar -C /cstrike/ -zxvf - \
+    && echo 'linux addons/amxmodx/dlls/amxmodx_mm_i386.so' >> /cstrike/addons/metamod/plugins.ini
+RUN cat /cstrike/mapcycle.txt >> /cstrike/addons/amxmodx/configs/maps.ini
 
 RUN curl -sLJO "$regamedll_url" \
-    && unzip -o -j regamedll-bin-$regamedll_version.zip "bin/linux32/cstrike/*" -d "/home/container/cstrike" \
-    && unzip -o -j regamedll-bin-$regamedll_version.zip "bin/linux32/cstrike/dlls/*" -d "/home/container/cstrike/dlls"
+    && unzip -o -j regamedll-bin-$regamedll_version.zip "bin/linux32/cstrike/*" -d "/cstrike" \
+    && unzip -o -j regamedll-bin-$regamedll_version.zip "bin/linux32/cstrike/dlls/*" -d "/cstrike/dlls"
 
 RUN curl -sLJO "$reapi_url" \
-    && unzip -o reapi-bin-$reapi_version.zip -d "/home/container/cstrike"
-RUN echo 'reapi' >> /home/container/cstrike/addons/amxmodx/configs/modules.ini
+    && unzip -o reapi-bin-$reapi_version.zip -d "/cstrike"
+RUN echo 'reapi' >> /cstrike/addons/amxmodx/configs/modules.ini
 
-COPY lib/bind_key/amxx/bind_key.amxx /home/container/cstrike/addons/amxmodx/plugins/bind_key.amxx
-RUN echo 'bind_key.amxx            ; binds keys for voting' >> /home/container/cstrike/addons/amxmodx/configs/plugins.ini
+COPY lib/bind_key/amxx/bind_key.amxx /cstrike/addons/amxmodx/plugins/bind_key.amxx
+RUN echo 'bind_key.amxx            ; binds keys for voting' >> /cstrike/addons/amxmodx/configs/plugins.ini
 
-WORKDIR /home/container
+WORKDIR 
 
 COPY --chmod=0755 --chown=steam:steam cstrike cstrike
 
@@ -79,6 +79,6 @@ RUN echo 10 > steam_appid.txt
 EXPOSE 27015
 EXPOSE 27015/udp
 
-COPY ./entrypoint.sh /home/container/entrypoint.sh
+COPY ./entrypoint.sh /entrypoint.sh
 
-ENTRYPOINT ["/bin/bash", "/home/container/entrypoint.sh"]
+ENTRYPOINT ["/bin/bash", "/entrypoint.sh"]
