@@ -96,4 +96,4 @@ COPY --chmod=0755 --chown=steam:steam ./entrypoint.sh /home/container/entrypoint
 
 RUN find -type f -name "entrypoint.sh"
 
-CMD ["/bin/bash", "/home/container/entrypoint.sh"]
+CMD ["/bin/bash", "./entrypoint.sh"]
