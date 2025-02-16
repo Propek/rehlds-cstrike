@@ -1,9 +1,5 @@
-FROM --platform=$TARGETOS/$TARGETARCH debian:stable-slim
-
-ENV DEBIAN_FRONTEND=noninteractive
-ENV LANG=en_US.utf8
-ENV LC_ALL=en_US.UTF-8
-ENV CPU_MHZ=2300
+FROM        --platform=$TARGETOS/$TARGETARCH debian:stable-slim
+ENV         DEBIAN_FRONTEND=noninteractive
 
 ARG rehlds_build=3.13.0.788
 ARG metamod_version=1.3.0.138
@@ -92,8 +88,6 @@ EXPOSE 27015
 EXPOSE 27015/udp
 
 #COPY --chown=steam:steam ./entrypoint.sh /home/container/entrypoint.sh
-COPY --chmod=0755 --chown=steam:steam ./entrypoint.sh /home/container/entrypoint.sh
-
-RUN find -type f -name "entrypoint.sh"
-
-CMD ["/bin/bash", "./entrypoint.sh"]
+#COPY --chmod=0755 --chown=steam:steam ./entrypoint.sh /home/container/entrypoint.sh
+COPY        ./entrypoint.sh /entrypoint.sh
+CMD         [ "/bin/bash", "/entrypoint.sh" ]
