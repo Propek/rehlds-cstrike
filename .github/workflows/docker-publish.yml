@@ -3,7 +3,7 @@ name: Publish Docker Image
 on:
   push:
     branches:
-      - "main" # Zmieniono z master na main
+      - "main"
     tags:
       - "*.*"
 
@@ -57,5 +57,5 @@ jobs:
           push: true
           file: Dockerfile
           provenance: false
-          tags: ${{ steps.metadata.outputs.tags }} # Używamy tagów wygenerowanych przez metadata-action
+          tags: ${{ steps.metadata.outputs.tags }}
           labels: ${{ steps.metadata.outputs.labels }}
