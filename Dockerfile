@@ -1,5 +1,5 @@
-FROM        --platform=$TARGETOS/$TARGETARCH debian:stable-slim
-ENV         DEBIAN_FRONTEND=noninteractive
+FROM --platform=$TARGETOS/$TARGETARCH debian:stable-slim
+ENV DEBIAN_FRONTEND=noninteractive
 
 ARG rehlds_build=3.13.0.788
 ARG metamod_version=1.3.0.138
@@ -35,6 +35,7 @@ RUN groupadd -r container && useradd -r -g container -m -d /home/container conta
 USER container
 WORKDIR /home/container
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
 RUN mkdir /home/container/steamcmd
 COPY ./lib/cs.install /home/container/steamcmd
 
@@ -42,43 +43,59 @@ RUN curl -sqL "$steamcmd_url" | tar xzvf - -C /home/container/steamcmd \
     && /home/container/steamcmd/steamcmd.sh +force_install_dir /home/container +runscript cs.install
 RUN ls /home/container
 
-RUN curl -sLJO "$rehlds_url" \
-    && unzip -o -j "rehlds-bin-$rehlds_build.zip" "bin/linux32/*" -d "/home/container" \
-    && unzip -o -j "rehlds-bin-$rehlds_build.zip" "bin/linux32/valve/*" -d "/home/container"
-
-RUN mkdir -p "$HOME/.steam" \
-    && ln -s /linux32 "$HOME/.steam/sdk32"
-
-#RUN find /home/container/Steam/steamapps/common/Half-Life -mindepth 1 -exec ln -s {} /home/container/ \;
-#RUN find /home/container/Steam/steamapps/common/Half-Life -mindepth 1 -exec sh -c ' \
-#  relpath="${1#/home/container/Steam/steamapps/common/Half-Life}"; \
-#  dest="/home/container$relpath"; \
-#  destdir=$(dirname "$dest"); \
-#  mkdir -p "$destdir"; \
-#  ln -s "$1" "$dest" \
-#' sh {} \;
-
-RUN touch /home/container/cstrike/listip.cfg
-RUN touch /home/container/cstrike/banned.cfg
-
-RUN mkdir -p /home/container/cstrike/addons/metamod \
-    && touch /home/container/cstrike/addons/metamod/plugins.ini
-RUN curl -sqL "$metamod_url" > tmp.zip
-RUN unzip -j tmp.zip "addons/metamod/metamod*" -d /home/container/cstrike/addons/metamod
+# Metamod
+RUN mkdir -p /home/container/cstrike/addons/metamod
+RUN touch /home/container/cstrike/addons/metamod/plugins.ini
+RUN curl -sqL "$metamod_url" -o metamod.zip
+RUN if [ $? -ne 0 ]; then echo "ERROR: curl metamod failed!"; exit 1; fi
+RUN ls -l metamod.zip
+RUN unzip -o -j metamod.zip -d /home/container/cstrike/addons/metamod
+RUN if [ $? -ne 0 ]; then echo "ERROR: unzip metamod failed!"; exit 1; fi
 RUN chmod -R 755 /home/container/cstrike/addons/metamod
 RUN sed -i 's/dlls\/cs\.so/addons\/metamod\/metamod_i386.so/g' /home/container/cstrike/liblist.gam
 
-RUN curl -sqL "$amxmod_url" | tar -C /home/container/cstrike/ -zxvf - \
-    && echo 'linux addons/amxmodx/dlls/amxmodx_mm_i386.so' >> /home/container/cstrike/addons/metamod/plugins.ini
+# AMX Mod X
+RUN mkdir -p /home/container/cstrike/addons/amxmodx/configs
+RUN mkdir -p /home/container/cstrike/addons/amxmodx/plugins
+RUN mkdir -p /home/container/cstrike/addons/amxmodx/modules
+RUN mkdir -p /home/container/cstrike/addons/amxmodx/scripting/include
+RUN mkdir -p /home/container/cstrike/addons/amxmodx/scripting/testsuite
+RUN mkdir -p /home/container/cstrike/addons/amxmodx/scripting/amxmod_compat
+RUN mkdir -p /home/container/cstrike/addons/amxmodx/logs
+RUN mkdir -p /home/container/cstrike/addons/amxmodx/data/lang
+RUN mkdir -p /home/container/cstrike/addons/amxmodx/data
+RUN mkdir -p /home/container/cstrike/addons/amxmodx/scripting
+RUN curl -sqL "$amxmod_url" -o amxmodx.tar.gz
+RUN if [ $? -ne 0 ]; then echo "ERROR: curl amxmodx failed!"; exit 1; fi
+RUN ls -l amxmodx.tar.gz
+RUN tar -C /home/container/cstrike/ -zxvf amxmodx.tar.gz
+RUN if [ $? -ne 0 ]; then echo "ERROR: tar amxmodx failed!"; exit 1; fi
+RUN echo 'linux addons/amxmodx/dlls/amxmodx_mm_i386.so' >> /home/container/cstrike/addons/metamod/plugins.ini
 RUN cat /home/container/cstrike/mapcycle.txt >> /home/container/cstrike/addons/amxmodx/configs/maps.ini
 
-RUN curl -sLJO "$regamedll_url" \
-    && unzip -o -j regamedll-bin-$regamedll_version.zip "bin/linux32/cstrike/*" -d "/home/container/cstrike" \
-    && unzip -o -j regamedll-bin-$regamedll_version.zip "bin/linux32/cstrike/dlls/*" -d "/home/container/cstrike/dlls"
+# ReGameDLL
+RUN mkdir -p /home/container/cstrike/dlls
+RUN curl -sLJO "$regamedll_url"
+RUN if [ $? -ne 0 ]; then echo "ERROR: curl regamedll failed!"; exit 1; fi
+RUN ls -l regamedll-bin-$regamedll_version.zip
+RUN unzip -o -j regamedll-bin-$regamedll_version.zip "bin/linux32/cstrike/*" -d "/home/container/cstrike"
+RUN if [ $? -ne 0 ]; then echo "ERROR: unzip regamedll cstrike failed!"; exit 1; fi
+RUN unzip -o -j regamedll-bin-$regamedll_version.zip "bin/linux32/cstrike/dlls/*" -d "/home/container/cstrike/dlls"
+RUN if [ $? -ne 0 ]; then echo "ERROR: unzip regamedll dlls failed!"; exit 1; fi
 
-RUN curl -sLJO "$reapi_url" \
-    && unzip -o reapi-bin-$reapi_version.zip -d "/home/container/cstrike"
+# ReAPI
+RUN curl -sLJO "$reapi_url"
+RUN if [ $? -ne 0 ]; then echo "ERROR: curl reapi failed!"; exit 1; fi
+RUN ls -l reapi-bin-$reapi_version.zip
+RUN unzip -o reapi-bin-$reapi_version.zip -d "/home/container/cstrike"
+RUN if [ $? -ne 0 ]; then echo "ERROR: unzip reapi failed!"; exit 1; fi
 RUN echo 'reapi' >> /home/container/cstrike/addons/amxmodx/configs/modules.ini
+
+RUN mkdir -p "$HOME/.steam"
+RUN ln -s /linux32 "$HOME/.steam/sdk32"
+
+RUN touch /home/container/cstrike/listip.cfg
+RUN touch /home/container/cstrike/banned.cfg
 
 COPY lib/bind_key/amxx/bind_key.amxx /home/container/cstrike/addons/amxmodx/plugins/bind_key.amxx
 RUN echo 'bind_key.amxx            ; binds keys for voting' >> /home/container/cstrike/addons/amxmodx/configs/plugins.ini
@@ -94,5 +111,5 @@ COPY /cstrike /home/container/cstrike
 EXPOSE 27015
 EXPOSE 27015/udp
 
-COPY        ./entrypoint.sh /entrypoint.sh
-CMD         [ "/bin/bash", "/entrypoint.sh" ]
+COPY ./entrypoint.sh /entrypoint.sh
+CMD ["/bin/bash", "/entrypoint.sh"]
