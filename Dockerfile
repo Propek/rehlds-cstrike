@@ -46,7 +46,7 @@ RUN curl -sLJO "$rehlds_url" \
 RUN mkdir -p "$HOME/.steam" \
     && ln -s /linux32 "$HOME/.steam/sdk32"
 
-#RUN find /home/container/Steam/steamapps/common/Half-Life -mindepth 1 -exec ln -s {} /home/container/ \;
+RUN find /home/container/Steam/steamapps/common/Half-Life -mindepth 1 -exec ln -s {} /home/container/ \;
 
 RUN touch /home/container/cstrike/listip.cfg
 RUN touch /home/container/cstrike/banned.cfg
