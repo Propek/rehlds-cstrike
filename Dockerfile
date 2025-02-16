@@ -43,7 +43,7 @@ RUN curl -sqL "$steamcmd_url" | tar xzvf - -C /home/container/steamcmd \
 RUN ls /home/container
 
 RUN curl -sLJO "$rehlds_url" \
-    && unzip -o -j "rehlds-bin-$rehlds_build.zip" "bin/linux32/*" -d "/home/container/" \
+    && unzip -o -j "rehlds-bin-$rehlds_build.zip" "bin/linux32/*" -d "/home/container" \
     && unzip -o -j "rehlds-bin-$rehlds_build.zip" "bin/linux32/valve/*" -d "/home/container"
 
 RUN mkdir -p "$HOME/.steam" \
@@ -85,11 +85,11 @@ RUN echo 'bind_key.amxx            ; binds keys for voting' >> /home/container/c
 
 WORKDIR /home/container
 
-COPY --chmod=0755 --chown=container:container cstrike cstrike
+COPY /cstrike /home/container/cstrike
 
-RUN chmod +x hlds_run hlds_linux
+#RUN chmod +x hlds_run hlds_linux
 
-RUN echo 10 > steam_appid.txt
+#RUN echo 10 > steam_appid.txt
 
 EXPOSE 27015
 EXPOSE 27015/udp
