@@ -85,6 +85,6 @@ RUN echo 10 > steam_appid.txt
 EXPOSE 27015
 EXPOSE 27015/udp
 
-COPY ./entrypoint.sh /entrypoint.sh
+COPY ./entrypoint.sh /home/container/entrypoint.sh
 
-ENTRYPOINT ["/bin/bash", "/entrypoint.sh"]
+ENTRYPOINT ["/bin/bash", "/home/container/entrypoint.sh"]
