@@ -43,7 +43,7 @@ fi
 
 # Display the command we're running in the output, and then execute it with the env
 # from the container itself.
-HLDS_RUN_PATH=$(find -f -name "hlds_run" -print -quit)
+HLDS_RUN_PATH=$(find -name "hlds_run" -print -quit)
 
 if [ -n "$HLDS_RUN_PATH" ]; then  # Check if the variable is not empty
   printf "HLDS_RUN_PATH: $HLDS_RUN_PATH"
