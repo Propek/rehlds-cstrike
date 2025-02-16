@@ -1,5 +1,4 @@
 login anonymous
-force_install_dir ./
 app_set_config 90 mod cstrike
 app_update 90 -beta steam_legacy
 app_update 90 -beta steam_legacy
