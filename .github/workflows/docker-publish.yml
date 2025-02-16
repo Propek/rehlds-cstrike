@@ -6,7 +6,7 @@ on:
       - "main"
     tags:
       - ghcr.io/propek/rehlds-cstrike:latest
-      - ghcr.io/propek/rehlds-cstrike:${{ github.sha }}
+      - ghcr.io/propek/rehlds-cstrike:*
 
 env:
   ARCHITECTURES: linux/amd64
