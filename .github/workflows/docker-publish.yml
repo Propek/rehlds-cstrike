@@ -37,8 +37,7 @@ jobs:
           tags: |
             type=semver,pattern={{major}}.{{minor}},enable=true
             type=semver,pattern=latest,enable=true
-            type=edge,branch=main
-          sha: ${{ github.sha }}
+            ${{ github.sha }}
       - uses: docker/build-push-action@v5.1.0
         with:
           context: .
