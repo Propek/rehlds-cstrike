@@ -46,8 +46,7 @@ RUN curl -sLJO "$rehlds_url" \
 RUN mkdir -p "$HOME/.steam" \
     && ln -s /linux32 "$HOME/.steam/sdk32"
 
-#RUN ln -s /home/container/Steam/steamapps/common/Half-Life/cstrike /home/container/cstrike
-RUN find /home/container/Steam/steamapps/common/Half-Life -mindepth 1 -exec ln -s {} /home/container/ \;
+#RUN find /home/container/Steam/steamapps/common/Half-Life -mindepth 1 -exec ln -s {} /home/container/ \;
 
 RUN touch /home/container/cstrike/listip.cfg
 RUN touch /home/container/cstrike/banned.cfg
@@ -86,5 +85,7 @@ EXPOSE 27015
 EXPOSE 27015/udp
 
 COPY ./entrypoint.sh /home/container/entrypoint.sh
+
+RUN chmod +x /home/container/entrypoint.sh
 
 ENTRYPOINT ["/bin/bash", "/home/container/entrypoint.sh"]
