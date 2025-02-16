@@ -48,8 +48,7 @@ jobs:
           tags: |
             type=semver,pattern={{major}}.{{minor}},enable=true
             type=semver,pattern=latest,enable=true
-            type=ref,event=push,branch=main
-            type=ref,event=push,branch=test
+            ${{ github.ref_name }}
             ${{ github.sha }}
 
       - name: Build and push Docker image
