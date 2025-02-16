@@ -5,7 +5,9 @@ on:
     branches:
       - "main"
     tags:
+      - ghcr.io/propek/rehlds-cstrike:latest
       - ghcr.io/propek/rehlds-cstrike:*
+      - ghcr.io/propek/rehlds-cstrike:${{ github.sha }}
 
 env:
   ARCHITECTURES: linux/amd64
