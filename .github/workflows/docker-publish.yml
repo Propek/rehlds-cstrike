@@ -22,8 +22,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3.1.0
-        with:
-          submodules: recursive
 
       - name: Set up QEMU for multi-arch builds with buildx
         uses: docker/setup-qemu-action@v2
@@ -40,25 +38,17 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Determine Docker tag
-        id: docker_tag
-        run: |
-          if [[ startsWith("${{ github.ref }}", "refs/tags/") ]]; then
-            echo "::set-output name=tag::${{ github.ref_name }}"
-          else
-            echo "::set-output name=tag::${{ github.sha }}"
-          fi
-
-      - id: metadata
+      - name: Extract metadata (tags, labels) for Docker
+        id: metadata
         uses: docker/metadata-action@v5.5.1
         with:
           images: |
             ghcr.io/${{ env.IMAGE_NAMESPACE }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=semver,pattern={{major}}.{{minor}},enable=true
-            type=semver,pattern=latest,enable=true
-            type=edge,branch=main
-          sha: ${{ github.sha }}
+            type=semver,pattern={{major}}.{{minor}},enable=true  # Tag semver
+            type=semver,pattern=latest,enable=true # Tag "latest"
+            type=edge,branch=main # Tag z nazwą brancha "main"
+            ${{ github.sha }} # Dodajemy tag z SHA commitu
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5.1.0
@@ -68,11 +58,5 @@ jobs:
           push: true
           file: Dockerfile
           provenance: false
-          tags: ${{ steps.metadata.outputs.tags }},ghcr.io/${{ env.IMAGE_NAMESPACE }}/${{ env.IMAGE_NAME }}:${{ steps.docker_tag.outputs.tag }}
+          tags: ${{ steps.metadata.outputs.tags }}
           labels: ${{ steps.metadata.outputs.labels }}
-
-      - name: Print working directory (Debug)
-        run: pwd
-
-      - name: List files in build context (Debug)
-        run: ls -l
