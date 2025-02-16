@@ -13,42 +13,25 @@ ARG amxmod_url="http://www.amxmodx.org/release/amxmodx-$amxmod_version-base-linu
 ARG regamedll_url="https://github.com/s1lentq/ReGameDLL_CS/releases/download/$regamedll_version/regamedll-bin-$regamedll_version.zip"
 ARG reapi_url="https://github.com/s1lentq/reapi/releases/download/$reapi_version/reapi-bin-$reapi_version.zip"
 
-RUN dpkg --add-architecture i386 \
-    && apt-get -y update \
-    && apt-get install -y --no-install-recommends \
-        ca-certificates \
-        curl \
-        lib32gcc-s1 \
-        unzip \
-        xz-utils \
-        zip=3.0-13 \
-        gcc-multilib \
-        g++-multilib \
-        tar \
-        gcc \
-        g++ \
-        libgcc1 \
-        libcurl4-gnutls-dev:i386 \
-        libssl1.1:i386 \
-        libcurl4:i386 \
-        lib32tinfo6 \
-        libtinfo6:i386 \
-        lib32z1 \
-        lib32stdc++6 \
-        libncurses5:i386 \
-        libcurl3-gnutls:i386 \
-        libsdl2-2.0-0:i386 \
-        iproute2 \
-        gdb \
-        libsdl1.2debian \
-        libfontconfig1 \
-        telnet \
-        net-tools \
-        netcat \
-        tzdata \
-    && useradd -m -d /home/container container \
-    && apt-get -y autoremove \
-    && rm -rf /var/lib/apt/lists/*
+# Add architecture and update
+RUN dpkg --add-architecture i386 && apt-get -y update
+
+# Install packages (grouped logically)
+RUN apt-get -y install --no-install-recommends \
+        ca-certificates curl lib32gcc-s1 unzip xz-utils zip=3.0-13 \
+        gcc-multilib g++-multilib tar gcc g++ libgcc1 \
+        libcurl4-gnutls-dev:i386 lib32tinfo6 libtinfo6:i386 lib32z1 \
+        lib32stdc++6 libncurses5:i386 libcurl3-gnutls:i386 libsdl2-2.0-0:i386 \
+        iproute2 gdb libsdl1.2debian libfontconfig1 telnet \
+        net-tools netcat-openbsd libssl-dev
+
+RUN apt-get -y install --no-install-recommends libssl-dev:i386 # Install i386 libssl-dev separately
+
+# Create user
+#RUN useradd -m -d /home/container container
+
+# Cleanup
+RUN apt-get -y autoremove && rm -rf /var/lib/apt/lists/*
 
 RUN groupadd -r steam && useradd -r -g steam -m -d /home/container steam
 
