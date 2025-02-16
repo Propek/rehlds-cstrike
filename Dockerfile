@@ -48,7 +48,8 @@ RUN mkdir -p "$HOME/.steam" \
 
 #RUN find /home/container/Steam/steamapps/common/Half-Life -mindepth 1 -exec ln -s {} /home/container/ \;
 RUN find /home/container/Steam/steamapps/common/Half-Life -mindepth 1 -exec sh -c ' \
-  dest="/home/container/${1##*/}"; \
+  relpath="${1#/home/container/Steam/steamapps/common/Half-Life}"; \
+  dest="/home/container$relpath"; \
   destdir=$(dirname "$dest"); \
   mkdir -p "$destdir"; \
   ln -s "$1" "$dest" \
