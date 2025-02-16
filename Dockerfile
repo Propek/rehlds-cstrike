@@ -31,7 +31,7 @@ ENV USER=container HOME=
 WORKDIR /home/container
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-COPY ./lib/hlds.install 
+COPY ./lib/hlds.install /home/container
 
 RUN curl -sqL "$steamcmd_url" | tar xzvf - \
     && ./steamcmd.sh +runscript hlds.install
@@ -67,8 +67,6 @@ RUN echo 'reapi' >> /cstrike/addons/amxmodx/configs/modules.ini
 
 COPY lib/bind_key/amxx/bind_key.amxx /cstrike/addons/amxmodx/plugins/bind_key.amxx
 RUN echo 'bind_key.amxx            ; binds keys for voting' >> /cstrike/addons/amxmodx/configs/plugins.ini
-
-WORKDIR 
 
 COPY --chmod=0755 --chown=steam:steam cstrike cstrike
 
