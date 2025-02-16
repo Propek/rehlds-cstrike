@@ -35,10 +35,10 @@ RUN groupadd -r container && useradd -r -g container -m -d /home/container conta
 USER container
 WORKDIR /home/container
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-COPY ./lib/hlds.install /home/container
+COPY ./lib/cs.install /home/container
 
 RUN curl -sqL "$steamcmd_url" | tar xzvf - \
-    && ./steamcmd.sh +runscript hlds.install
+    && ./steamcmd.sh +runscript cs.install
 
 RUN curl -sLJO "$rehlds_url" \
     && unzip -o -j "rehlds-bin-$rehlds_build.zip" "bin/linux32/*" -d "/home/container/" \
@@ -48,13 +48,13 @@ RUN mkdir -p "$HOME/.steam" \
     && ln -s /linux32 "$HOME/.steam/sdk32"
 
 #RUN find /home/container/Steam/steamapps/common/Half-Life -mindepth 1 -exec ln -s {} /home/container/ \;
-RUN find /home/container/Steam/steamapps/common/Half-Life -mindepth 1 -exec sh -c ' \
-  relpath="${1#/home/container/Steam/steamapps/common/Half-Life}"; \
-  dest="/home/container$relpath"; \
-  destdir=$(dirname "$dest"); \
-  mkdir -p "$destdir"; \
-  ln -s "$1" "$dest" \
-' sh {} \;
+#RUN find /home/container/Steam/steamapps/common/Half-Life -mindepth 1 -exec sh -c ' \
+#  relpath="${1#/home/container/Steam/steamapps/common/Half-Life}"; \
+#  dest="/home/container$relpath"; \
+#  destdir=$(dirname "$dest"); \
+#  mkdir -p "$destdir"; \
+#  ln -s "$1" "$dest" \
+#' sh {} \;
 
 RUN touch /home/container/cstrike/listip.cfg
 RUN touch /home/container/cstrike/banned.cfg
