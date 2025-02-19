@@ -114,7 +114,9 @@ cat "$CS_DIR/mapcycle.txt" >> "$CS_DIR/addons/amxmodx/configs/maps.ini"
 # Install ReGameDLL
 REGAMEDLL_URL="https://github.com/s1lentq/ReGameDLL_CS/releases/download/${REGAMEDLL_VERSION}/regamedll-bin-${REGAMEDLL_VERSION}.zip"
 wget -O regamedll.zip "$REGAMEDLL_URL"
-unzip -o -j regamedll.zip "bin/linux32/cstrike/*" -d "$CS_DIR"
+unzip -o -j regamedll.zip "bin/linux32/cstrike/delta.lst" -d "$CS_DIR"
+unzip -o -j ragemedll.zip "bin/linux32/cstrike/game.cfg" -d "$CS_DIR"
+unzip -o -j ragemedll.zip "bin/linux32/cstrike/game_init.cfg" -d "$CS_DIR"
 unzip -o -j regamedll.zip "bin/linux32/cstrike/dlls/*" -d "${CS_DIR}/dlls"
 rm regamedll.zip
 
