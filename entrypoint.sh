@@ -23,7 +23,7 @@
 #
 
 # --- Variables ---------------------------------
-REHLDS_VERSION="3.13.0.788"  # Or "latest"
+REHLDS_VERSION="3.13.0.788"
 METAMOD_VERSION="1.3.0.149"
 AMXMOD_VERSION="1.10.0-git5467"
 REGAMEDLL_VERSION="5.26.0.668"
@@ -48,6 +48,12 @@ export INTERNAL_IP
 
 # Switch to the container's working directory
 cd /home/container || exit 1
+
+curl -sSL -o steamcmd.tar.gz http://media.steampowered.com/installer/steamcmd_linux.tar.gz
+
+mkdir -p /steamcmd
+tar -xzvf steamcmd.tar.gz -C /steamcmd
+rm steamcmd.tar.gz
 
 # Convert all of the "{{VARIABLE}}" parts of the command into the expected shell
 # variable format of "${VARIABLE}" before evaluating the string and automatically

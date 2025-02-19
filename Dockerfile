@@ -34,7 +34,7 @@ RUN dpkg --add-architecture i386 && apt-get -y update
 
 # Install packages (grouped logically)
 RUN apt-get -y install --no-install-recommends \
-        ca-certificates curl lib32gcc-s1 unzip xz-utils zip=3.0-13 \
+        ca-certificates curl wget lib32gcc-s1 unzip xz-utils zip=3.0-13 \
         gcc-multilib g++-multilib tar gcc g++ libgcc1 \
         libcurl4-gnutls-dev:i386 lib32tinfo6 libtinfo6:i386 lib32z1 \
         lib32stdc++6 libncurses5:i386 libcurl3-gnutls:i386 libsdl2-2.0-0:i386 \
