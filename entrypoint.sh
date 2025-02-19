@@ -51,8 +51,8 @@ cd /home/container || exit 1
 
 curl -sSL -o steamcmd.tar.gz http://media.steampowered.com/installer/steamcmd_linux.tar.gz
 
-mkdir -p /steamcmd
-tar -xzvf steamcmd.tar.gz -C /steamcmd
+mkdir -p $SERVER_DIR/steamcmd
+tar -xzvf steamcmd.tar.gz -C $SERVER_DIR/steamcmd
 rm steamcmd.tar.gz
 
 # Convert all of the "{{VARIABLE}}" parts of the command into the expected shell
