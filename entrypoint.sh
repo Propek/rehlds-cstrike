@@ -88,7 +88,7 @@ echo -e " ### Installing mods ###"
 
 # Install ReHLDS
 REHLDS_URL="https://github.com/dreamstalker/rehlds/releases/download/${REHLDS_VERSION}/rehlds-bin-${REHLDS_VERSION}.zip"
-SRCDS_BETAID}wget -O rehlds-bin.zip "$REHLDS_URL"
+wget -O rehlds-bin.zip "$REHLDS_URL"
 unzip -o -j rehlds-bin.zip "bin/linux32/*" -d "$CS_DIR"
 unzip -o -j rehlds-bin.zip "bin/linux32/valve/*" -d "$CS_DIR"
 rm rehlds-bin.zip
