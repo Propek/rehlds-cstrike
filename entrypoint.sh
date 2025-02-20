@@ -24,7 +24,7 @@
 
 # --- Variables ---------------------------------
 REHLDS_VERSION="3.13.0.788"
-METAMOD_VERSION="1.3.0.149"
+METAMOD_VERSION="1.3.0.138"
 AMXMOD_VERSION="1.10.0-git5467"
 REGAMEDLL_VERSION="5.26.0.668"
 REAPI_VERSION="5.24.0.300"
@@ -88,7 +88,7 @@ echo -e " ### Installing mods ###"
 
 # Install ReHLDS
 REHLDS_URL="https://github.com/dreamstalker/rehlds/releases/download/${REHLDS_VERSION}/rehlds-bin-${REHLDS_VERSION}.zip"
-wget -O rehlds-bin.zip "$REHLDS_URL"
+SRCDS_BETAID}wget -O rehlds-bin.zip "$REHLDS_URL"
 unzip -o -j rehlds-bin.zip "bin/linux32/*" -d "$CS_DIR"
 unzip -o -j rehlds-bin.zip "bin/linux32/valve/*" -d "$CS_DIR"
 rm rehlds-bin.zip
